@@ -13,6 +13,7 @@ Here's what a puzzle URL looks like (spread out onto multiple lines):
 HTTP/1.0" 302 528 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US;
 rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
 """
+__author__ = "Bethsheba Zebata"
 
 import os
 import re
@@ -26,8 +27,12 @@ def read_urls(filename):
     extracting the hostname from the filename itself, sorting
     alphabetically in increasing order, and screening out duplicates.
     """
-    # +++your code here+++
-    pass
+    domain = "http://" + filename.split("_")[1]
+    url = set()
+    images = re.findall(r'[\S]+\.jpg', open(filename).read())
+    for image in images:
+        url.add(domain+image)
+    return sorted(url)
 
 
 def download_images(img_urls, dest_dir):
@@ -38,8 +43,25 @@ def download_images(img_urls, dest_dir):
     to show each local image file.
     Creates the directory if necessary.
     """
-    # +++your code here+++
-    pass
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    os.chdir(dest_dir)
+
+    img_tag = []
+
+    for url in img_urls:
+        img_name = url.split("/")[-1]
+
+        request = urllib.request.urlopen(url)
+
+        img = open(img_name, "wb")
+        img.write(request.read())
+
+        img_tag.append('<img src="{0}">'.format(img_name))
+
+    html_file = open("index.html", "w")
+    html_file.write("<html><body>{0}</body></html>".format(''.join(img_tag)))
 
 
 def create_parser():
