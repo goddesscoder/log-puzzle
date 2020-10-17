@@ -29,9 +29,11 @@ def read_urls(filename):
     """
     domain = "http://" + filename.split("_")[1]
     url = set()
-    images = re.findall(r'[\S]+\.jpg', open(filename).read())
+    # images = re.findall(r'[\S]+\.jpg', open(filename).read())
+    images = re.findall(r'GET (\S*puzzle\S*) HTTP', open(filename).read())
+
     for image in images:
-        url.add(domain+image)
+        url.add(domain + image)
     return sorted(url)
 
 
