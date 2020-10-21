@@ -13,7 +13,7 @@ Here's what a puzzle URL looks like (spread out onto multiple lines):
 HTTP/1.0" 302 528 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US;
 rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
 """
-__author__ = "Bethsheba Zebata"
+__author__ = "Bethsheba Zebata, Study Hall, John"
 
 import os
 import re
@@ -29,9 +29,9 @@ def read_urls(filename):
     """
     domain = "http://" + filename.split("_")[1]
     puzzle_list = []
-    # url = set()
+
     images = re.findall(r'[\S]+\.jpg', open(filename).read())
-    # images = re.findall(r'GET (\S*puzzle\S*) HTTP', open(filename).read())
+
     for image in images:
         if image not in puzzle_list and "puzzle" in image:
             puzzle_list.append(image)
@@ -51,12 +51,8 @@ def download_images(img_urls, dest_dir):
     if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir)
 
-    # os.chdir(dest_dir)
-
-    # img_tag = []
     results = []
     for i, url in enumerate(img_urls):
-        # img_name = url.split("/")[-1]
 
         file_name = dest_dir + "/img" + str(i) + ".jpg"
         urllib.request.urlretrieve(url, file_name)
@@ -66,15 +62,6 @@ def download_images(img_urls, dest_dir):
         for r in results:
             f.write(f"<img src={r}>")
         f.write("</body></html>")
-
-        # img = open(img_name, "wb")
-
-    #     img.write(read())
-
-    #     img_tag.append('<img src="{0}">'.format(file_name))
-
-    # html_file = open("index.html", "w")
-    # html_file.write("<html><body>{0}</body></html>".format(''.join(img_tag)))
 
 
 def create_parser():
