@@ -13,7 +13,7 @@ Here's what a puzzle URL looks like (spread out onto multiple lines):
 HTTP/1.0" 302 528 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US;
 rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
 """
-__author__ = "Bethsheba Zebata"
+__author__ = "Bethsheba Zebata,Study Hall,John"
 
 import os
 import re
@@ -28,11 +28,16 @@ def read_urls(filename):
     alphabetically in increasing order, and screening out duplicates.
     """
     domain = "http://" + filename.split("_")[1]
-    url = set()
+    puzzle_list = []
+
     images = re.findall(r'[\S]+\.jpg', open(filename).read())
+
     for image in images:
-        url.add(domain+image)
-    return sorted(url)
+        if image not in puzzle_list and "puzzle" in image:
+            puzzle_list.append(image)
+    puzzle_list.sort(key=lambda x: x[-8:])
+    puzzle_list = list(map(lambda x: domain + x, puzzle_list))
+    return puzzle_list
 
 
 def download_images(img_urls, dest_dir):
@@ -43,25 +48,20 @@ def download_images(img_urls, dest_dir):
     to show each local image file.
     Creates the directory if necessary.
     """
-    if not os.path.exists(dest_dir):
+    if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir)
 
-    os.chdir(dest_dir)
+    results = []
+    for i, url in enumerate(img_urls):
 
-    img_tag = []
-
-    for url in img_urls:
-        img_name = url.split("/")[-1]
-
-        request = urllib.request.urlopen(url)
-
-        img = open(img_name, "wb")
-        img.write(request.read())
-
-        img_tag.append('<img src="{0}">'.format(img_name))
-
-    html_file = open("index.html", "w")
-    html_file.write("<html><body>{0}</body></html>".format(''.join(img_tag)))
+        file_name = dest_dir + "/img" + str(i) + ".jpg"
+        urllib.request.urlretrieve(url, file_name)
+        results.append("img" + str(i) + ".jpg")
+    with open(dest_dir + "/index.html", "w") as f:
+        f.write("<html><body>")
+        for r in results:
+            f.write(f"<img src={r}>")
+        f.write("</body></html>")
 
 
 def create_parser():
